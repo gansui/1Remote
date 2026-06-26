@@ -395,8 +395,14 @@ namespace _1RM.View.Host
             // 直接替换当前tab的Content，不触发Dragablz清理
             SelectedItem.Content = splitHost;
 
-            host1.Conn();
-            host2.Conn();
+            // 延迟连接，等SplitPaneHost渲染到视觉树后再连接
+            System.Windows.Threading.Dispatcher.CurrentDispatcher.BeginInvoke(
+                new Action(() =>
+                {
+                    host1.Conn();
+                    host2.Conn();
+                }),
+                System.Windows.Threading.DispatcherPriority.Background);
         }
 
         private void RegisterHost(HostBase host)
