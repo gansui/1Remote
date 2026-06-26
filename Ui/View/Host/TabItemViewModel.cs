@@ -51,7 +51,7 @@ namespace _1RM.View.Host
             }
         }
 
-        public HostBase Content { get; }
+        public HostBase Content { get; internal set; }
         /// <summary>
         /// tab title mark color
         /// </summary>

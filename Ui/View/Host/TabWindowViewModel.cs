@@ -7,6 +7,7 @@ using System.Windows;
 using System.Timers;
 using Dragablz;
 using _1RM.Model;
+using _1RM.Model.ProtocolRunner;
 using _1RM.Service;
 using _1RM.Utils;
 using _1RM.Utils.WindowsApi;
@@ -344,25 +345,56 @@ namespace _1RM.View.Host
 
         public Visibility BtnSplitVisibility => Items.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
 
+        private void DoSplit(SplitDirection direction)
+        {
+            if (SelectedItem?.Content == null) return;
+
+            var currentHost = SelectedItem.Content;
+            var currentProtocol = currentHost.ProtocolServer;
+            var protocolClone = currentProtocol.Clone();
+            protocolClone.DecryptToConnectLevel();
+            protocolClone.GenerateSessionId();
+
+            var runner = RunnerHelper.GetRunner(
+                IoC.Get<ProtocolConfigurationService>(),
+                protocolClone,
+                protocolClone.Protocol);
+
+            if (runner == null || runner.IsRunWithoutHosting()) return;
+
+            var newHost = runner.GetHost(protocolClone, null);
+            if (newHost == null) return;
+
+            newHost.SetParentWindow(View);
+
+            if (currentHost is SplitPaneHost splitPane)
+            {
+                splitPane.Split(direction, newHost);
+            }
+            else
+            {
+                var splitHost = new SplitPaneHost(currentProtocol, currentHost);
+                splitHost.SetParentWindow(View);
+                splitHost.Split(direction, newHost);
+
+                var oldItem = SelectedItem;
+                var newItem = new TabItemViewModel(splitHost, currentProtocol.DisplayName);
+                int index = Items.IndexOf(oldItem);
+                Items.Remove(oldItem);
+                Items.Insert(index, newItem);
+                SelectedItem = newItem;
+            }
+
+            newHost.Conn();
+        }
+
         private RelayCommand? _cmdSplitHorizontal;
         public RelayCommand CmdSplitHorizontal
         {
             get
             {
-                return _cmdSplitHorizontal ??= new RelayCommand((o) =>
-                {
-                    if (SelectedItem?.Content == null) return;
-
-                    // 获取当前连接的配置
-                    var currentProtocol = SelectedItem.Content.ProtocolServer;
-                    var protocolClone = currentProtocol.Clone();
-                    protocolClone.DecryptToConnectLevel();
-                    protocolClone.GenerateSessionId();
-
-                    // 打开新连接（在同一标签窗口中）
-                    var tabToken = View.Token;
-                    GlobalEventHelper.OnRequestServerConnect?.Invoke(protocolClone, "SplitHorizontal", tabToken);
-                }, o => this.SelectedItem != null);
+                return _cmdSplitHorizontal ??= new RelayCommand((o) => DoSplit(SplitDirection.Horizontal),
+                    o => this.SelectedItem != null);
             }
         }
 
@@ -371,20 +403,8 @@ namespace _1RM.View.Host
         {
             get
             {
-                return _cmdSplitVertical ??= new RelayCommand((o) =>
-                {
-                    if (SelectedItem?.Content == null) return;
-
-                    // 获取当前连接的配置
-                    var currentProtocol = SelectedItem.Content.ProtocolServer;
-                    var protocolClone = currentProtocol.Clone();
-                    protocolClone.DecryptToConnectLevel();
-                    protocolClone.GenerateSessionId();
-
-                    // 打开新连接（在同一标签窗口中）
-                    var tabToken = View.Token;
-                    GlobalEventHelper.OnRequestServerConnect?.Invoke(protocolClone, "SplitVertical", tabToken);
-                }, o => this.SelectedItem != null);
+                return _cmdSplitVertical ??= new RelayCommand((o) => DoSplit(SplitDirection.Vertical),
+                    o => this.SelectedItem != null);
             }
         }
 
