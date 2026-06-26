@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using _1RM.View.Host.ProtocolHosts;
 
 namespace _1RM.View.Host
@@ -49,7 +50,7 @@ namespace _1RM.View.Host
             if (ActiveHost != null)
             {
                 ActiveHost.BorderThickness = new Thickness(2);
-                ActiveHost.BorderBrush = System.Windows.Media.Brushes.Accent;
+                ActiveHost.BorderBrush = new SolidColorBrush(Color.FromRgb(0, 120, 215));
                 ActiveHost.FocusOnMe();
             }
         }
@@ -115,9 +116,9 @@ namespace _1RM.View.Host
                             Height = 5,
                             HorizontalAlignment = HorizontalAlignment.Stretch,
                             VerticalAlignment = VerticalAlignment.Center,
-                            Background = System.Windows.Media.Brushes.LightGray,
-                            ResizeDirection = GridSplitter.ResizeDirection.Rows,
-                            ResizeBehavior = GridSplitter.ResizeBehavior.BetweenRows
+                            Background = Brushes.LightGray,
+                            ResizeDirection = GridResizeDirection.Rows,
+                            ResizeBehavior = GridResizeBehavior.BetweenRows
                         };
                         Grid.SetRow(splitter, rowIndex + 1);
                         Grid.SetColumn(splitter, 0);
@@ -156,9 +157,9 @@ namespace _1RM.View.Host
                             Width = 5,
                             HorizontalAlignment = HorizontalAlignment.Center,
                             VerticalAlignment = VerticalAlignment.Stretch,
-                            Background = System.Windows.Media.Brushes.LightGray,
-                            ResizeDirection = GridSplitter.ResizeDirection.Columns,
-                            ResizeBehavior = GridSplitter.ResizeBehavior.BetweenColumns
+                            Background = Brushes.LightGray,
+                            ResizeDirection = GridResizeDirection.Columns,
+                            ResizeBehavior = GridResizeBehavior.BetweenColumns
                         };
                         Grid.SetRow(splitter, 0);
                         Grid.SetColumn(splitter, columnIndex + 1);
@@ -190,7 +191,7 @@ namespace _1RM.View.Host
                     ActiveHost = _hosts.Count > 0 ? _hosts[0] : null;
                     if (ActiveHost != null)
                     {
-                        ActiveHost.BorderBrush = System.Windows.Media.Brushes.Accent;
+                        ActiveHost.BorderBrush = new SolidColorBrush(Color.FromRgb(0, 120, 215));
                     }
                 }
             }
