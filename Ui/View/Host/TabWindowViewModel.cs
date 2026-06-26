@@ -103,7 +103,7 @@ namespace _1RM.View.Host
                 // Get effective window of the current tab content.
                 _hWndTabContent = GetCurrentTabContentWindow();
 
-                if (_selectedItem != null)
+                if (_selectedItem?.Content != null)
                 {
                     _selectedItem.Content.OnCanResizeNowChanged -= OnCanResizeNowChanged;
                 }
@@ -118,7 +118,7 @@ namespace _1RM.View.Host
                     if (_selectedItem != null)
                     {
                         SetTitle();
-                        _selectedItem.Content.OnCanResizeNowChanged += OnCanResizeNowChanged;
+                        _selectedItem.Content?.OnCanResizeNowChanged += OnCanResizeNowChanged;
 
                         // Here, the SelectedItem property has merely been assigned a new value;
                         // the tab switching process is not yet complete. Therefore, it is still
