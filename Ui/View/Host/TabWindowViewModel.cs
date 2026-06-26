@@ -420,37 +420,6 @@ namespace _1RM.View.Host
             IoC.Get<SessionControlService>().ConnectionId2Hosts.TryAdd(host.ConnectionId, host);
         }
 
-            // 创建两个全新的host，都用相同配置
-            var protocolClone1 = currentProtocol.Clone();
-            protocolClone1.DecryptToConnectLevel();
-            protocolClone1.GenerateSessionId();
-            var host1 = runner.GetHost(protocolClone1, null);
-            if (host1 == null) return;
-            host1.SetParentWindow(View);
-
-            var protocolClone2 = currentProtocol.Clone();
-            protocolClone2.DecryptToConnectLevel();
-            protocolClone2.GenerateSessionId();
-            var host2 = runner.GetHost(protocolClone2, null);
-            if (host2 == null) return;
-            host2.SetParentWindow(View);
-
-            var splitHost = new SplitPaneHost(protocolClone1, host1);
-            splitHost.SetParentWindow(View);
-            splitHost.Split(direction, host2);
-
-            var oldItem = SelectedItem;
-            int index = Items.IndexOf(oldItem);
-            Items.RemoveAt(index);
-
-            var newItem = new TabItemViewModel(splitHost, currentProtocol.DisplayName);
-            Items.Insert(index, newItem);
-            SelectedItem = newItem;
-
-            host1.Conn();
-            host2.Conn();
-        }
-
         private RelayCommand? _cmdSplitHorizontal;
         public RelayCommand CmdSplitHorizontal
         {
