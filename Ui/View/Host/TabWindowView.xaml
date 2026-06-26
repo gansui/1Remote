@@ -287,8 +287,8 @@
                             <StackPanel Visibility="{Binding SettingsPage.GeneralSettingViewModel.TabWindowCloseButtonOnLeft, Converter={StaticResource ConverterBool2Visible}}"
                                         Orientation="Horizontal"
                                         Background="{DynamicResource PrimaryMidBrush}">
-                                <!--IT ONLY A PLACEHOLDER FOR 6 BUTTONS, 4 * 45 + 5 + 45 * 2(depends on this.SelectedItem.Content?.CanFullScreen & BtnCloseAllVisibility)-->
-                                <Grid Width="185"></Grid>
+                                <!--IT ONLY A PLACEHOLDER FOR 8 BUTTONS, 6 * 45 + 5 + 45 * 2(depends on this.SelectedItem.Content?.CanFullScreen & BtnCloseAllVisibility)-->
+                                <Grid Width="275"></Grid>
                                 <Grid Width="45" Visibility="{Binding SelectedItem.Content.CanFullScreen, Converter={StaticResource BooleanToVisibilityConverter}}"></Grid>
                                 <Grid Width="45" Visibility="{Binding BtnCloseAllVisibility}"></Grid>
                             </StackPanel>
@@ -340,8 +340,8 @@
                                         Visibility="{Binding SettingsPage.GeneralSettingViewModel.TabWindowCloseButtonOnLeft, Converter={StaticResource ConverterBool2VisibleInv}}"
                                         Orientation="Horizontal" HorizontalAlignment="Right"
                                         Background="{DynamicResource PrimaryMidBrush}">
-                                <!--IT ONLY A PLACEHOLDER FOR 5 BUTTONS, 4 * 45 + 5 + 45 * 2(depends on this.SelectedItem.Content?.CanFullScreen & BtnCloseAllVisibility)-->
-                                <Grid Width="185"></Grid>
+                                <!--IT ONLY A PLACEHOLDER FOR 8 BUTTONS, 6 * 45 + 5 + 45 * 2(depends on this.SelectedItem.Content?.CanFullScreen & BtnCloseAllVisibility)-->
+                                <Grid Width="275"></Grid>
                                 <Grid Width="45" Visibility="{Binding SelectedItem.Content.CanFullScreen, Converter={StaticResource BooleanToVisibilityConverter}}"></Grid>
                                 <Grid Width="45" Visibility="{Binding BtnCloseAllVisibility}"></Grid>
                             </StackPanel>

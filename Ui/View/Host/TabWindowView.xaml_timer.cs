@@ -1,4 +1,4 @@
-﻿using System.Runtime.InteropServices;
+using System.Runtime.InteropServices;
 using System.Timers;
 using System;
 using System.Windows;
@@ -80,7 +80,7 @@ namespace _1RM.View.Host
             {
                 try
                 {
-                    hWnd = this.Vm.SelectedItem.Content.GetHostHwnd();
+                    hWnd = this.Vm?.SelectedItem?.Content?.GetHostHwnd() ?? IntPtr.Zero;
                 }
                 catch (Exception ex)
                 {
