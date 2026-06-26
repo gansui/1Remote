@@ -373,14 +373,17 @@ namespace _1RM.View.Host
             }
             else
             {
+                var oldItem = SelectedItem;
+                oldItem.Content = null;
+
                 var splitHost = new SplitPaneHost(currentProtocol, currentHost);
                 splitHost.SetParentWindow(View);
                 splitHost.Split(direction, newHost);
 
-                var oldItem = SelectedItem;
                 var newItem = new TabItemViewModel(splitHost, currentProtocol.DisplayName);
                 int index = Items.IndexOf(oldItem);
                 Items.Remove(oldItem);
+                oldItem.Dispose();
                 Items.Insert(index, newItem);
                 SelectedItem = newItem;
             }

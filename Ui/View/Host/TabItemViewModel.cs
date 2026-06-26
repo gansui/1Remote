@@ -34,7 +34,7 @@ namespace _1RM.View.Host
         {
             if (!_isDisposed)
             {
-                Content.ProtocolServer.PropertyChanged -= ProtocolServerOnPropertyChanged;
+                Content?.ProtocolServer.PropertyChanged -= ProtocolServerOnPropertyChanged;
                 _isDisposed = true;
             }
             base.Dispose();
