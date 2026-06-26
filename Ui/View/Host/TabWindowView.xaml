@@ -479,8 +479,7 @@
             <Button ToolTip="垂直切分"
                     Command="{Binding CmdSplitVertical}"
                     Width="45" Height="{x:Static host:TabWindowView.TITLE_BAR_HEIGHT}" VerticalAlignment="Top" Background="Transparent"
-                    Style="{StaticResource ButtonBarPrimaryStyle}"
-                    Visibility="{Binding BtnSplitVisibility}">
+                    Style="{StaticResource ButtonBarPrimaryStyle}">
                 <Grid Height="15" Width="15">
                     <Rectangle Width="5" Height="12" Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}" StrokeThickness="1" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                     <Rectangle Width="5" Height="12" Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}" StrokeThickness="1" HorizontalAlignment="Right" VerticalAlignment="Center"/>
@@ -490,8 +489,7 @@
             <Button ToolTip="水平切分"
                     Command="{Binding CmdSplitHorizontal}"
                     Width="45" Height="{x:Static host:TabWindowView.TITLE_BAR_HEIGHT}" VerticalAlignment="Top" Background="Transparent"
-                    Style="{StaticResource ButtonBarPrimaryStyle}"
-                    Visibility="{Binding BtnSplitVisibility}">
+                    Style="{StaticResource ButtonBarPrimaryStyle}">
                 <Grid Height="15" Width="15">
                     <Rectangle Width="12" Height="5" Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}" StrokeThickness="1" VerticalAlignment="Top" HorizontalAlignment="Center"/>
                     <Rectangle Width="12" Height="5" Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}" StrokeThickness="1" VerticalAlignment="Bottom" HorizontalAlignment="Center"/>
