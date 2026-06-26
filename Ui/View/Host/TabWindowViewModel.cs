@@ -364,13 +364,61 @@ namespace _1RM.View.Host
                 var protocolClone = currentProtocol.Clone();
                 protocolClone.DecryptToConnectLevel();
                 protocolClone.GenerateSessionId();
-                var newHost = runner.GetHost(protocolClone, null);
+                var newHost = runner.GetHost(protocolClone, View);
                 if (newHost == null) return;
-                newHost.SetParentWindow(View);
+                RegisterHost(newHost);
                 splitPane.Split(direction, newHost);
                 newHost.Conn();
                 return;
             }
+
+            // 创建两个全新的host
+            var protocolClone1 = currentProtocol.Clone();
+            protocolClone1.DecryptToConnectLevel();
+            protocolClone1.GenerateSessionId();
+            var host1 = runner.GetHost(protocolClone1, View);
+            if (host1 == null) return;
+
+            var protocolClone2 = currentProtocol.Clone();
+            protocolClone2.DecryptToConnectLevel();
+            protocolClone2.GenerateSessionId();
+            var host2 = runner.GetHost(protocolClone2, View);
+            if (host2 == null) return;
+
+            // 先注册新host到SessionControlService
+            RegisterHost(host1);
+            RegisterHost(host2);
+
+            var splitHost = new SplitPaneHost(protocolClone1, host1);
+            splitHost.SetParentWindow(View);
+            splitHost.Split(direction, host2);
+
+            // 先将旧Item的Content置null释放Dragablz引用，再移除
+            var oldItem = SelectedItem;
+            oldItem.Content = null;
+            int index = Items.IndexOf(oldItem);
+            Items.RemoveAt(index);
+
+            var newItem = new TabItemViewModel(splitHost, currentProtocol.DisplayName);
+            Items.Insert(index, newItem);
+            SelectedItem = newItem;
+
+            host1.Conn();
+            host2.Conn();
+        }
+
+        private void RegisterHost(HostBase host)
+        {
+            host.OnClosed += id =>
+            {
+                IoC.Get<SessionControlService>().CloseProtocolHostAsync(id);
+            };
+            host.OnFullScreen2Window += id =>
+            {
+                IoC.Get<SessionControlService>().MoveSessionToTabWindow(id);
+            };
+            IoC.Get<SessionControlService>().ConnectionId2Hosts.TryAdd(host.ConnectionId, host);
+        }
 
             // 创建两个全新的host，都用相同配置
             var protocolClone1 = currentProtocol.Clone();
