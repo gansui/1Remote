@@ -118,7 +118,7 @@ namespace _1RM.View.Host
                             VerticalAlignment = VerticalAlignment.Center,
                             Background = Brushes.LightGray,
                             ResizeDirection = GridResizeDirection.Rows,
-                            ResizeBehavior = GridResizeBehavior.BetweenRows
+                            ResizeBehavior = GridResizeBehavior.PreviousAndNext
                         };
                         Grid.SetRow(splitter, rowIndex + 1);
                         Grid.SetColumn(splitter, 0);
@@ -159,7 +159,7 @@ namespace _1RM.View.Host
                             VerticalAlignment = VerticalAlignment.Stretch,
                             Background = Brushes.LightGray,
                             ResizeDirection = GridResizeDirection.Columns,
-                            ResizeBehavior = GridResizeBehavior.BetweenColumns
+                            ResizeBehavior = GridResizeBehavior.PreviousAndNext
                         };
                         Grid.SetRow(splitter, 0);
                         Grid.SetColumn(splitter, columnIndex + 1);
