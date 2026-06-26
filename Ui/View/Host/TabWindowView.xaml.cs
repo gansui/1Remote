@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -206,6 +206,13 @@ namespace _1RM.View.Host
             {
                 this.Icon = IoC.Get<ConfigurationService>().General.ShowSessionIconInSessionWindow ?
                     Vm.SelectedItem.Content.ProtocolServer.IconImg : null;
+
+                // 当标签页切换时，延迟设置焦点到新标签页的内容
+                // 使用Dispatcher延迟执行，确保UI更新完成后再设置焦点
+                this.Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    Vm?.SelectedItem?.Content?.FocusOnMe();
+                }), System.Windows.Threading.DispatcherPriority.Background);
             }
         }
 

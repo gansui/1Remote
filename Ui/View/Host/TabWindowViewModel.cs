@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -6,6 +6,7 @@ using System.Linq;
 using System.Windows;
 using System.Timers;
 using Dragablz;
+using _1RM.Model;
 using _1RM.Service;
 using _1RM.Utils;
 using _1RM.Utils.WindowsApi;
@@ -122,13 +123,10 @@ namespace _1RM.View.Host
                         // the tab switching process is not yet complete. Therefore, it is still
                         // not possible to give focus to the tab that will become active.
 
-                        // Commented out for the reasons above.
-                        // _selectedItem.Content.FocusOnMe();
-
                         // Since there is no event notification when a new tab becomes active,
                         // we use a timer to detect this change and then give focus to the newly
                         // active tab.
-                        _timer_Count = 40;  // 5ms interval, total 200ms
+                        _timer_Count = 80;  // 5ms interval, total 400ms
                         _timer_ObserveTabSwitching.Start();
                     }
                     foreach (var item in Items)
@@ -175,6 +173,7 @@ namespace _1RM.View.Host
             else
             {
                 Win32Api.SetForegroundWindow(hWnd);
+                _selectedItem?.Content?.FocusOnMe();
             }
         }
 
@@ -340,6 +339,52 @@ namespace _1RM.View.Host
                         View.WindowState = WindowState.Normal;
                     }
                 });
+            }
+        }
+
+        public Visibility BtnSplitVisibility => Items.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
+
+        private RelayCommand? _cmdSplitHorizontal;
+        public RelayCommand CmdSplitHorizontal
+        {
+            get
+            {
+                return _cmdSplitHorizontal ??= new RelayCommand((o) =>
+                {
+                    if (SelectedItem?.Content == null) return;
+
+                    // 获取当前连接的配置
+                    var currentProtocol = SelectedItem.Content.ProtocolServer;
+                    var protocolClone = currentProtocol.Clone();
+                    protocolClone.DecryptToConnectLevel();
+                    protocolClone.GenerateSessionId();
+
+                    // 打开新连接（在同一标签窗口中）
+                    var tabToken = View.Token;
+                    GlobalEventHelper.OnRequestServerConnect?.Invoke(protocolClone, "SplitHorizontal", tabToken);
+                }, o => this.SelectedItem != null);
+            }
+        }
+
+        private RelayCommand? _cmdSplitVertical;
+        public RelayCommand CmdSplitVertical
+        {
+            get
+            {
+                return _cmdSplitVertical ??= new RelayCommand((o) =>
+                {
+                    if (SelectedItem?.Content == null) return;
+
+                    // 获取当前连接的配置
+                    var currentProtocol = SelectedItem.Content.ProtocolServer;
+                    var protocolClone = currentProtocol.Clone();
+                    protocolClone.DecryptToConnectLevel();
+                    protocolClone.GenerateSessionId();
+
+                    // 打开新连接（在同一标签窗口中）
+                    var tabToken = View.Token;
+                    GlobalEventHelper.OnRequestServerConnect?.Invoke(protocolClone, "SplitVertical", tabToken);
+                }, o => this.SelectedItem != null);
             }
         }
 
