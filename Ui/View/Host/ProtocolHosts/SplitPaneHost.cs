@@ -4,9 +4,15 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using _1RM.Model.Protocol.Base;
+using Shawn.Utils.WpfResources.Theme.Styles;
 
 namespace _1RM.View.Host.ProtocolHosts
 {
+    public enum SplitDirection
+    {
+        Horizontal,
+        Vertical
+    }
     public partial class SplitPaneHost : HostBase
     {
         private readonly List<HostBase> _children = new();
