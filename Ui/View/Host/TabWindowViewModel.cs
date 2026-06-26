@@ -351,42 +351,56 @@ namespace _1RM.View.Host
 
             var currentHost = SelectedItem.Content;
             var currentProtocol = currentHost.ProtocolServer;
-            var protocolClone = currentProtocol.Clone();
-            protocolClone.DecryptToConnectLevel();
-            protocolClone.GenerateSessionId();
 
             var runner = RunnerHelper.GetRunner(
                 IoC.Get<ProtocolConfigurationService>(),
-                protocolClone,
-                protocolClone.Protocol);
+                currentProtocol,
+                currentProtocol.Protocol);
 
             if (runner == null || runner.IsRunWithoutHosting()) return;
 
-            var newHost = runner.GetHost(protocolClone, null);
-            if (newHost == null) return;
-
-            newHost.SetParentWindow(View);
-
             if (currentHost is SplitPaneHost splitPane)
             {
+                var protocolClone = currentProtocol.Clone();
+                protocolClone.DecryptToConnectLevel();
+                protocolClone.GenerateSessionId();
+                var newHost = runner.GetHost(protocolClone, null);
+                if (newHost == null) return;
+                newHost.SetParentWindow(View);
                 splitPane.Split(direction, newHost);
-            }
-            else
-            {
-                var oldItem = SelectedItem;
-                int index = Items.IndexOf(oldItem);
-                Items.RemoveAt(index);
-
-                var splitHost = new SplitPaneHost(currentProtocol, currentHost);
-                splitHost.SetParentWindow(View);
-                splitHost.Split(direction, newHost);
-
-                var newItem = new TabItemViewModel(splitHost, currentProtocol.DisplayName);
-                Items.Insert(index, newItem);
-                SelectedItem = newItem;
+                newHost.Conn();
+                return;
             }
 
-            newHost.Conn();
+            // 创建两个全新的host，都用相同配置
+            var protocolClone1 = currentProtocol.Clone();
+            protocolClone1.DecryptToConnectLevel();
+            protocolClone1.GenerateSessionId();
+            var host1 = runner.GetHost(protocolClone1, null);
+            if (host1 == null) return;
+            host1.SetParentWindow(View);
+
+            var protocolClone2 = currentProtocol.Clone();
+            protocolClone2.DecryptToConnectLevel();
+            protocolClone2.GenerateSessionId();
+            var host2 = runner.GetHost(protocolClone2, null);
+            if (host2 == null) return;
+            host2.SetParentWindow(View);
+
+            var splitHost = new SplitPaneHost(protocolClone1, host1);
+            splitHost.SetParentWindow(View);
+            splitHost.Split(direction, host2);
+
+            var oldItem = SelectedItem;
+            int index = Items.IndexOf(oldItem);
+            Items.RemoveAt(index);
+
+            var newItem = new TabItemViewModel(splitHost, currentProtocol.DisplayName);
+            Items.Insert(index, newItem);
+            SelectedItem = newItem;
+
+            host1.Conn();
+            host2.Conn();
         }
 
         private RelayCommand? _cmdSplitHorizontal;
