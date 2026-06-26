@@ -385,7 +385,6 @@ namespace _1RM.View.Host
             var host2 = runner.GetHost(protocolClone2, View);
             if (host2 == null) return;
 
-            // 先注册新host到SessionControlService
             RegisterHost(host1);
             RegisterHost(host2);
 
@@ -393,15 +392,8 @@ namespace _1RM.View.Host
             splitHost.SetParentWindow(View);
             splitHost.Split(direction, host2);
 
-            // 先将旧Item的Content置null释放Dragablz引用，再移除
-            var oldItem = SelectedItem;
-            oldItem.Content = null;
-            int index = Items.IndexOf(oldItem);
-            Items.RemoveAt(index);
-
-            var newItem = new TabItemViewModel(splitHost, currentProtocol.DisplayName);
-            Items.Insert(index, newItem);
-            SelectedItem = newItem;
+            // 直接替换当前tab的Content，不触发Dragablz清理
+            SelectedItem.Content = splitHost;
 
             host1.Conn();
             host2.Conn();
