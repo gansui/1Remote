@@ -91,7 +91,7 @@ namespace _1RM.View.Settings.DataSource
             if (targetHasData)
             {
                 if (false == MessageBoxHelper.Confirm(
-                    "目标目录已存在配置数据，是否用当前数据覆盖？\n\n选择"取消"将只切换模式，保留目标目录的现有数据。"))
+                    "目标目录已存在配置数据，是否用当前数据覆盖？\n\n选择[取消]将只切换模式，保留目标目录的现有数据。"))
                 {
                     // 只更新标志文件，不复制数据
                     UpdateFlagFile(toAppData);
