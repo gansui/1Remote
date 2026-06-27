@@ -392,17 +392,14 @@ namespace _1RM.View.Host
             splitHost.SetParentWindow(View);
             splitHost.Split(direction, host2);
 
-            // 直接替换当前tab的Content，不触发Dragablz清理
-            SelectedItem.Content = splitHost;
+            // 作为新tab添加（不移除旧tab，避免触发清理杀PuTTY进程）
+            var newItem = new TabItemViewModel(splitHost, currentProtocol.DisplayName + " [Split]");
+            Items.Add(newItem);
+            SelectedItem = newItem;
 
-            // 延迟连接，等SplitPaneHost渲染到视觉树后再连接
-            System.Windows.Threading.Dispatcher.CurrentDispatcher.BeginInvoke(
-                new Action(() =>
-                {
-                    host1.Conn();
-                    host2.Conn();
-                }),
-                System.Windows.Threading.DispatcherPriority.Background);
+            host1.Conn();
+            host2.Conn();
+        }
         }
 
         private void RegisterHost(HostBase host)
