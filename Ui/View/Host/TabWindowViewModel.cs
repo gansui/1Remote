@@ -400,7 +400,6 @@ namespace _1RM.View.Host
             host1.Conn();
             host2.Conn();
         }
-        }
 
         private void RegisterHost(HostBase host)
         {
