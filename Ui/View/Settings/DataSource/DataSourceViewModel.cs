@@ -427,6 +427,15 @@ namespace _1RM.View.Settings.DataSource
                                 return;
                             }
 
+                            // 删除旧数据库文件，重新创建
+                            var dbPath = LocalSource.Path;
+                            if (File.Exists(dbPath))
+                            {
+                                LocalSource.Database_CloseConnection();
+                                File.Delete(dbPath);
+                                SimpleLogHelper.Debug($"Deleted old database: {dbPath}");
+                            }
+
                             var ret = LocalSource.Database_InsertServer(list);
                             if (ret.IsSuccess)
                             {
