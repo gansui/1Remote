@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -392,6 +392,14 @@ namespace _1RM
                     {
                         mvm.ShowMe(goPage: EnumMainWindowPage.SettingsData);
                         MessageBoxHelper.ErrorAlert(error);
+                        // 加密密钥不匹配时，提示用户退出
+                        if (_localDataConnectionStatus.Status == EnumDatabaseStatus.EncryptKeyError)
+                        {
+                            if (MessageBoxHelper.Confirm("是否退出程序？\n\n你可以配置正确的加密密钥后重新启动。"))
+                            {
+                                Environment.Exit(0);
+                            }
+                        }
                     };
                 }
                 else

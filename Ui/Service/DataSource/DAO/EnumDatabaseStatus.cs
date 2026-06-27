@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using _1RM.Service;
 
@@ -65,7 +65,7 @@ namespace _1RM.Service.DataSource.DAO
                     return "database: database lost connection!";
 
                 case EnumDatabaseStatus.EncryptKeyError:
-                    return $"database: your database is encrypted by a third-part build {Assert.APP_NAME}, this exe can not read your data correctly!";
+                    return $"database: your database is encrypted by a third-part build {Assert.APP_NAME}, this exe can not read your data correctly!\n\nPlease configure the correct encryption key or exit the program.";
 
                 case EnumDatabaseStatus.OtherError:
                     return $"database: other error!";
