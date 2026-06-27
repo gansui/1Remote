@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -220,11 +220,14 @@ namespace _1RM.View.Host.ProtocolHosts
 
             if (runner is PuttyRunner)
             {
+                var sessionId = _sessionId;
                 RunAfterConnected += () =>
                 {
                     try
                     {
-                        PuttyConfig.CleanUpOldConfig();
+                        // 只删除当前连接自己的session配置，避免影响其他正在运行的连接
+                        var config = new PuttyConfig(sessionId);
+                        config.DeleteFromConfig();
                         var path = PuttyRunner.GetAutoCommandFilePath(ProtocolServer);
                         if (!string.IsNullOrEmpty(path) && File.Exists(path))
                             File.Delete(path);
