@@ -86,26 +86,44 @@ namespace _1RM.View.Settings.DataSource
             var sourcePaths = toAppData ? portablePaths : appDataPaths;
             var targetPaths = toAppData ? appDataPaths : portablePaths;
 
+            // 检测目标目录是否已有数据
+            bool targetHasData = File.Exists(targetPaths.ProfileJsonPath);
+            if (targetHasData)
+            {
+                if (false == MessageBoxHelper.Confirm(
+                    "目标目录已存在配置数据，是否用当前数据覆盖？\n\n选择"取消"将只切换模式，保留目标目录的现有数据。"))
+                {
+                    // 只更新标志文件，不复制数据
+                    UpdateFlagFile(toAppData);
+                    return;
+                }
+            }
+
             // 确保目标目录存在
             AppPathHelper.CreateDirIfNotExist(targetPaths.BaseDirPath, false);
             AppPathHelper.CreateDirIfNotExist(targetPaths.BaseDirPathForLocality, false);
 
             // 复制配置文件
-            CopyFileIfNotExist(sourcePaths.ProfileJsonPath, targetPaths.ProfileJsonPath);
-            CopyFileIfNotExist(sourcePaths.ProfileAdditionalDataSourceJsonPath, targetPaths.ProfileAdditionalDataSourceJsonPath);
+            CopyFileIfNotExist(sourcePaths.ProfileJsonPath, targetPaths.ProfileJsonPath, overwrite: true);
+            CopyFileIfNotExist(sourcePaths.ProfileAdditionalDataSourceJsonPath, targetPaths.ProfileAdditionalDataSourceJsonPath, overwrite: true);
 
             // 复制数据库文件
             var sourceDbPath = GetDbPath(sourcePaths);
             var targetDbPath = GetDbPath(targetPaths);
             if (!string.IsNullOrEmpty(sourceDbPath) && File.Exists(sourceDbPath))
             {
-                CopyFileIfNotExist(sourceDbPath, targetDbPath);
+                CopyFileIfNotExist(sourceDbPath, targetDbPath, overwrite: true);
             }
 
             // 复制PuTTY配置目录
-            CopyDirectoryIfExists(sourcePaths.PuttyDirPath, targetPaths.PuttyDirPath);
+            CopyDirectoryIfExists(sourcePaths.PuttyDirPath, targetPaths.PuttyDirPath, overwrite: true);
 
             // 更新标志文件
+            UpdateFlagFile(toAppData);
+        }
+
+        private static void UpdateFlagFile(bool toAppData)
+        {
             if (File.Exists(AppPathHelper.FORCE_INTO_PORTABLE_MODE))
                 File.Delete(AppPathHelper.FORCE_INTO_PORTABLE_MODE);
             if (File.Exists(AppPathHelper.FORCE_INTO_APPDATA_MODE))
@@ -137,19 +155,19 @@ namespace _1RM.View.Settings.DataSource
             return paths.SqliteDbDefaultPath;
         }
 
-        private static void CopyFileIfNotExist(string source, string target)
+        private static void CopyFileIfNotExist(string source, string target, bool overwrite = false)
         {
             if (string.IsNullOrEmpty(source) || !File.Exists(source)) return;
-            if (File.Exists(target)) return;
+            if (!overwrite && File.Exists(target)) return;
 
             var dir = Path.GetDirectoryName(target);
             if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
                 Directory.CreateDirectory(dir);
 
-            File.Copy(source, target);
+            File.Copy(source, target, overwrite);
         }
 
-        private static void CopyDirectoryIfExists(string source, string target)
+        private static void CopyDirectoryIfExists(string source, string target, bool overwrite = false)
         {
             if (string.IsNullOrEmpty(source) || !Directory.Exists(source)) return;
 
@@ -159,14 +177,14 @@ namespace _1RM.View.Settings.DataSource
             foreach (var file in Directory.GetFiles(source))
             {
                 var targetFile = Path.Combine(target, Path.GetFileName(file));
-                if (!File.Exists(targetFile))
-                    File.Copy(file, targetFile);
+                if (overwrite || !File.Exists(targetFile))
+                    File.Copy(file, targetFile, overwrite);
             }
 
             foreach (var dir in Directory.GetDirectories(source))
             {
                 var targetDir = Path.Combine(target, Path.GetFileName(dir));
-                CopyDirectoryIfExists(dir, targetDir);
+                CopyDirectoryIfExists(dir, targetDir, overwrite);
             }
         }
 
