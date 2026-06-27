@@ -15,7 +15,7 @@ namespace _1RM
 #if FOR_MICROSOFT_STORE_ONLY
         public const string APP_DISPLAY_NAME = $"{APP_NAME}(Store)";
 #else
-        public const string APP_DISPLAY_NAME = APP_NAME;
+        public const string APP_DISPLAY_NAME = $"{APP_NAME} (modified by gansui)";
 #endif
 #endif
 
