@@ -435,7 +435,7 @@ namespace _1RM.View.Settings.DataSource
                             }
                             else
                             {
-                                MessageBoxHelper.ErrorAlert($"导入失败：{ret.GetErrorMessage}");
+                                MessageBoxHelper.ErrorAlert($"导入失败：{ret.ErrorInfo}");
                             }
                         }
                         catch (Exception e)
