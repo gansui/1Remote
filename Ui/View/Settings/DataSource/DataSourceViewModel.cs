@@ -2,14 +2,19 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using Newtonsoft.Json;
 using _1RM.Model;
+using _1RM.Model.Protocol.Base;
 using _1RM.Service;
 using _1RM.Service.DataSource;
 using _1RM.Service.DataSource.DAO;
 using _1RM.Service.DataSource.Model;
 using _1RM.Utils;
+using _1RM.View.ServerView;
 using _1RM.View.Utils;
 using _1RM.View.Utils.MaskAndPop;
 using Shawn.Utils;
@@ -386,6 +391,63 @@ namespace _1RM.View.Settings.DataSource
                             }
                         });
                     }
+                });
+            }
+        }
+
+
+        private RelayCommand? _cmdImportFromJson;
+        public RelayCommand CmdImportFromJson
+        {
+            get
+            {
+                return _cmdImportFromJson ??= new RelayCommand((o) =>
+                {
+                    var path = SelectFileHelper.OpenFile("json|*.json");
+                    if (string.IsNullOrEmpty(path)) return;
+
+                    MaskLayerController.ShowProcessingRing("正在导入...", IoC.Get<MainWindowViewModel>());
+                    Task.Factory.StartNew(() =>
+                    {
+                        try
+                        {
+                            var list = new List<ProtocolBase>();
+                            var deserializeObject = JsonConvert.DeserializeObject<List<object>>(File.ReadAllText(path, System.Text.Encoding.UTF8)) ?? new List<object>();
+                            foreach (var server in deserializeObject.Select(json => ItemCreateHelper.CreateFromJsonString(json.ToString() ?? "")))
+                            {
+                                if (server == null) continue;
+                                server.Id = string.Empty;
+                                server.DecryptToConnectLevel();
+                                list.Add(server);
+                            }
+
+                            if (list.Count == 0)
+                            {
+                                MessageBoxHelper.Info("未找到可导入的服务器配置。");
+                                return;
+                            }
+
+                            var ret = LocalSource.Database_InsertServer(list);
+                            if (ret.IsSuccess)
+                            {
+                                IoC.Get<GlobalData>().ReloadAll(true);
+                                MessageBoxHelper.Info($"导入完成，共添加 {list.Count} 个服务器配置。\n\n请重启软件以加载新数据。");
+                            }
+                            else
+                            {
+                                MessageBoxHelper.ErrorAlert($"导入失败：{ret.GetErrorMessage}");
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            SimpleLogHelper.Warning(e);
+                            MessageBoxHelper.ErrorAlert("导入失败：数据格式错误 - " + e.Message);
+                        }
+                        finally
+                        {
+                            MaskLayerController.HideMask(IoC.Get<MainWindowViewModel>());
+                        }
+                    });
                 });
             }
         }

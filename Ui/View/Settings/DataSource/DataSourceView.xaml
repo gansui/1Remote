@@ -264,6 +264,20 @@
                         </MenuItem.Icon>
                     </MenuItem>
 
+                    <Separator/>
+
+                    <MenuItem Command="{Binding CmdImportFromJson}">
+                        <MenuItem.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="JSON"></TextBlock>
+                                <TextBlock VerticalAlignment="Center" Margin="2 0" FontSize="10" Opacity="0.6">(导入服务器配置)</TextBlock>
+                            </StackPanel>
+                        </MenuItem.Header>
+                        <MenuItem.Icon>
+                            <Path Height="14" UseLayoutRounding="True" Data="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10H7v-2h10v2zm0-4H7V7h10v2z" Fill="{DynamicResource PrimaryTextBrush}" Stretch="Uniform"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+
                 </MenuItem>
             </Menu>
 
