@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using _1RM.Model.Protocol.Base;
@@ -34,7 +34,7 @@ namespace _1RM.View.Host
         {
             if (!_isDisposed)
             {
-                Content?.ProtocolServer.PropertyChanged -= ProtocolServerOnPropertyChanged;
+                Content.ProtocolServer.PropertyChanged -= ProtocolServerOnPropertyChanged;
                 _isDisposed = true;
             }
             base.Dispose();
@@ -51,7 +51,7 @@ namespace _1RM.View.Host
             }
         }
 
-        public HostBase Content { get; internal set; }
+        public HostBase Content { get; }
         /// <summary>
         /// tab title mark color
         /// </summary>
@@ -61,7 +61,7 @@ namespace _1RM.View.Host
 
 
         private RelayCommand? _cmdReconnect;
-        private string _displayName = "";
+        private string _displayName;
 
         public RelayCommand CmdReconnect
         {

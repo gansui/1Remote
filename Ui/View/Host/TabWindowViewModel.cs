@@ -6,8 +6,6 @@ using System.Linq;
 using System.Windows;
 using System.Timers;
 using Dragablz;
-using _1RM.Model;
-using _1RM.Model.ProtocolRunner;
 using _1RM.Service;
 using _1RM.Utils;
 using _1RM.Utils.WindowsApi;
@@ -103,7 +101,7 @@ namespace _1RM.View.Host
                 // Get effective window of the current tab content.
                 _hWndTabContent = GetCurrentTabContentWindow();
 
-                if (_selectedItem?.Content != null)
+                if (_selectedItem != null)
                 {
                     _selectedItem.Content.OnCanResizeNowChanged -= OnCanResizeNowChanged;
                 }
@@ -118,7 +116,7 @@ namespace _1RM.View.Host
                     if (_selectedItem != null)
                     {
                         SetTitle();
-                        _selectedItem.Content?.OnCanResizeNowChanged += OnCanResizeNowChanged;
+                        _selectedItem.Content.OnCanResizeNowChanged += OnCanResizeNowChanged;
 
                         // Here, the SelectedItem property has merely been assigned a new value;
                         // the tab switching process is not yet complete. Therefore, it is still
@@ -340,97 +338,6 @@ namespace _1RM.View.Host
                         View.WindowState = WindowState.Normal;
                     }
                 });
-            }
-        }
-
-        public Visibility BtnSplitVisibility => Items.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
-
-        private void DoSplit(SplitDirection direction)
-        {
-            if (SelectedItem?.Content == null) return;
-
-            var currentHost = SelectedItem.Content;
-            var currentProtocol = currentHost.ProtocolServer;
-
-            var runner = RunnerHelper.GetRunner(
-                IoC.Get<ProtocolConfigurationService>(),
-                currentProtocol,
-                currentProtocol.Protocol);
-
-            if (runner == null || runner.IsRunWithoutHosting()) return;
-
-            if (currentHost is SplitPaneHost splitPane)
-            {
-                var protocolClone = currentProtocol.Clone();
-                protocolClone.DecryptToConnectLevel();
-                protocolClone.GenerateSessionId();
-                var newHost = runner.GetHost(protocolClone, View);
-                if (newHost == null) return;
-                RegisterHost(newHost);
-                splitPane.Split(direction, newHost);
-                newHost.Conn();
-                return;
-            }
-
-            // 创建两个全新的host
-            var protocolClone1 = currentProtocol.Clone();
-            protocolClone1.DecryptToConnectLevel();
-            protocolClone1.GenerateSessionId();
-            var host1 = runner.GetHost(protocolClone1, View);
-            if (host1 == null) return;
-
-            var protocolClone2 = currentProtocol.Clone();
-            protocolClone2.DecryptToConnectLevel();
-            protocolClone2.GenerateSessionId();
-            var host2 = runner.GetHost(protocolClone2, View);
-            if (host2 == null) return;
-
-            RegisterHost(host1);
-            RegisterHost(host2);
-
-            var splitHost = new SplitPaneHost(protocolClone1, host1);
-            splitHost.SetParentWindow(View);
-            splitHost.Split(direction, host2);
-
-            // 作为新tab添加（不移除旧tab，避免触发清理杀PuTTY进程）
-            var newItem = new TabItemViewModel(splitHost, currentProtocol.DisplayName + " [Split]");
-            Items.Add(newItem);
-            SelectedItem = newItem;
-
-            host1.Conn();
-            host2.Conn();
-        }
-
-        private void RegisterHost(HostBase host)
-        {
-            host.OnClosed += id =>
-            {
-                IoC.Get<SessionControlService>().CloseProtocolHostAsync(id);
-            };
-            host.OnFullScreen2Window += id =>
-            {
-                IoC.Get<SessionControlService>().MoveSessionToTabWindow(id);
-            };
-            IoC.Get<SessionControlService>().ConnectionId2Hosts.TryAdd(host.ConnectionId, host);
-        }
-
-        private RelayCommand? _cmdSplitHorizontal;
-        public RelayCommand CmdSplitHorizontal
-        {
-            get
-            {
-                return _cmdSplitHorizontal ??= new RelayCommand((o) => DoSplit(SplitDirection.Horizontal),
-                    o => this.SelectedItem != null);
-            }
-        }
-
-        private RelayCommand? _cmdSplitVertical;
-        public RelayCommand CmdSplitVertical
-        {
-            get
-            {
-                return _cmdSplitVertical ??= new RelayCommand((o) => DoSplit(SplitDirection.Vertical),
-                    o => this.SelectedItem != null);
             }
         }
 
