@@ -436,6 +436,15 @@ namespace _1RM.View.Settings.DataSource
                                 SimpleLogHelper.Debug($"Deleted old database: {dbPath}");
                             }
 
+                            // 初始化新数据库表
+                            var db = LocalSource.GetDataBase();
+                            var initResult = db.InitTables();
+                            if (!initResult.IsSuccess)
+                            {
+                                MessageBoxHelper.ErrorAlert($"无法初始化数据库：{initResult.ErrorInfo}");
+                                return;
+                            }
+
                             var ret = LocalSource.Database_InsertServer(list);
                             if (ret.IsSuccess)
                             {
